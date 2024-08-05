@@ -11,12 +11,12 @@ bazel_dep(name = "platforms", version = "0.0.5")
 
 bazel_dep(
     name = "protobuf_javascript_gonzojive",
-    version = "3.21.5",
+    version = "3.21.5.gonzojive",
     repo_name = "com_google_protobuf_javascript")
 
 bazel_dep(
     name = "grpc-web",
-    version = "1.5.0.bcr",
+    version = "1.6.0.rc1",
     repo_name = "com_github_grpc_grpc_web")
 
 # Needed to resolve https://github.com/bazelbuild/bazel-central-registry/issues/2538.
@@ -42,7 +42,7 @@ use_repo(
 )
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
-bazel_dep(name = "aspect_bazel_lib", version = "1.32.1", dev_dependency = True)
+bazel_dep(name = "aspect_bazel_lib", version = "2.7.9", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
 
 bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
