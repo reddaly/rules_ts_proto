@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	tsDefsRunfilesPath  = "com_github_gonzojive_rules_ts_proto/ts_proto/codegen/protoc-gen-ts.sh"
+	tsDefsRunfilesPath  = "rules_ts_proto/ts_proto/codegen/protoc-gen-ts.sh"
 	genJSRunfilesPath   = "com_google_protobuf_javascript/generator/protoc-gen-js"
 	grpcWebRunfilesPath = "com_github_grpc_grpc_web/javascript/net/grpc/web/generator/protoc-gen-grpc-web"
 

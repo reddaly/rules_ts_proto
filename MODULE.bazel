@@ -35,19 +35,19 @@ use_repo(
     "org_golang_google_protobuf",
 )
 
-bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
-bazel_dep(name = "aspect_bazel_lib", version = "2.7.9", dev_dependency = True)
+bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1")
+bazel_dep(name = "aspect_bazel_lib", version = "2.7.9")
 bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
 
 bazel_dep(name = "rules_proto_grpc", version = "5.0.0")
 bazel_dep(name = "rules_proto", version = "6.0.2")
-bazel_dep(name = "aspect_rules_ts", version = "3.0.0-rc1")
+bazel_dep(name = "aspect_rules_ts", version = "3.1.0")
 
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext", dev_dependency = True)
 rules_ts_ext.deps()
 use_repo(rules_ts_ext, "npm_typescript")
 
-bazel_dep(name = "aspect_rules_js", version = "2.0.0-rc9")
+bazel_dep(name = "aspect_rules_js", version = "2.0.0")
 
 ####### Node.js version #########
 # By default you get the node version from DEFAULT_NODE_VERSION in @rules_nodejs//nodejs:repositories.bzl

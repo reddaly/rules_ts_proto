@@ -291,7 +291,8 @@ def default_tsconfig():
         },
     }
 
-def ts_proto_library(name, proto, visibility = None, deps = [], tsconfig = None):
+def ts_proto_library(name, proto, visibility = None, deps = [],
+                     implicit_deps = {}, tsconfig = None):
     """A rule for compiling protobufs into a ts_project.
 
     Args:
@@ -299,6 +300,8 @@ def ts_proto_library(name, proto, visibility = None, deps = [], tsconfig = None)
         proto: proto_library rule to compile.
         visibility: Visibility of output library.
         deps: TypeScript dependencies.
+        implicit_deps: A map from NPM package name to the bazel label of a
+
         tsconfig: The tsconfig to be passed to ts_project rules.
     """
     if tsconfig == None:
@@ -333,16 +336,25 @@ def ts_proto_library(name, proto, visibility = None, deps = [], tsconfig = None)
         invert = True,
     )
 
-    implicit_deps = []
-    for dep_package_name in [
+    implicit_deps_list = []
+    REQUIRED_NPM_PACKAGE_NAMES = [
         "grpc-web",
         "google-protobuf",
         "@types/google-protobuf",
-    ]:
-        implicit_deps += JS_IMPORT_BAZEL_TARGET_MAP[dep_package_name]
+    ]
+    unsatisfied_npm_packages = [
+        npm_package for
+        npm_package in REQUIRED_NPM_PACKAGE_NAMES
+        if npm_package not in implicit_deps
+    ]
+    if len(unsatisfied_npm_packages) > 0:
+        fail("implicit_deps is missing entries for {}".format(unsatisfied_npm_packages))
+
+    for dep_package_name in REQUIRED_NPM_PACKAGE_NAMES:
+        implicit_deps_list += implicit_deps[dep_package_name]
 
     deps = [x for x in deps]
-    for want_dep in implicit_deps:
+    for want_dep in implicit_deps_list:
         if want_dep not in deps:
             deps.append(want_dep)
 
