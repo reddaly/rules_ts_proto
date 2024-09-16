@@ -51,6 +51,11 @@ local_path_override(
     path = "../..",
 )
 
+local_path_override(
+    module_name = "protobuf_javascript_gonzojive",
+    path = "/home/red/code/protobuf-javascript",
+)
+
 # Needed to resolve https://github.com/bazelbuild/bazel-central-registry/issues/2538.
 # Note this only has an effect when single_version_override is in the root module,
 # ruls_ts_proto. You'll need to copy paste it into.

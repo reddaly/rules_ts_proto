@@ -8882,7 +8882,7 @@
     "@@rules_python~//python/extensions:python.bzl%python": {
       "general": {
         "bzlTransitiveDigest": "uHZmn4VCpelMhuk7Rz8Q5oK94ttURW5KkyvXa6hRTfk=",
-        "usagesDigest": "l9FoATP1dIQidncrh9B1kvO7H3lqSXOCUHwLSoGHyZk=",
+        "usagesDigest": "j/W4ndu6HZMDhqXUMUBx52qadoff8iWr2wAVDDrVSRU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {
@@ -9314,6 +9314,24 @@
               ]
             }
           },
+          "python_3_11_aarch64-apple-darwin": {
+            "bzlFile": "@@rules_python~//python:repositories.bzl",
+            "ruleClassName": "python_repository",
+            "attributes": {
+              "sha256": "b042c966920cf8465385ca3522986b12d745151a72c060991088977ca36d3883",
+              "patches": [],
+              "platform": "aarch64-apple-darwin",
+              "python_version": "3.11.7",
+              "release_filename": "20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz",
+              "urls": [
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz"
+              ],
+              "distutils_content": "",
+              "strip_prefix": "python",
+              "coverage_tool": "",
+              "ignore_root_user_error": false
+            }
+          },
           "python_3_9": {
             "bzlFile": "@@rules_python~//python/private:toolchains_repo.bzl",
             "ruleClassName": "toolchain_aliases",
@@ -9331,17 +9349,17 @@
               ]
             }
           },
-          "python_3_11_aarch64-apple-darwin": {
+          "python_3_11_x86_64-pc-windows-msvc": {
             "bzlFile": "@@rules_python~//python:repositories.bzl",
             "ruleClassName": "python_repository",
             "attributes": {
-              "sha256": "b042c966920cf8465385ca3522986b12d745151a72c060991088977ca36d3883",
+              "sha256": "67077e6fa918e4f4fd60ba169820b00be7c390c497bf9bc9cab2c255ea8e6f3e",
               "patches": [],
-              "platform": "aarch64-apple-darwin",
+              "platform": "x86_64-pc-windows-msvc",
               "python_version": "3.11.7",
-              "release_filename": "20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz",
+              "release_filename": "20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz",
               "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-aarch64-apple-darwin-install_only.tar.gz"
+                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
               ],
               "distutils_content": "",
               "strip_prefix": "python",
@@ -9380,24 +9398,6 @@
                 "x86_64-pc-windows-msvc",
                 "x86_64-unknown-linux-gnu"
               ]
-            }
-          },
-          "python_3_11_x86_64-pc-windows-msvc": {
-            "bzlFile": "@@rules_python~//python:repositories.bzl",
-            "ruleClassName": "python_repository",
-            "attributes": {
-              "sha256": "67077e6fa918e4f4fd60ba169820b00be7c390c497bf9bc9cab2c255ea8e6f3e",
-              "patches": [],
-              "platform": "x86_64-pc-windows-msvc",
-              "python_version": "3.11.7",
-              "release_filename": "20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz",
-              "urls": [
-                "https://github.com/indygreg/python-build-standalone/releases/download/20240107/cpython-3.11.7+20240107-x86_64-pc-windows-msvc-shared-install_only.tar.gz"
-              ],
-              "distutils_content": "",
-              "strip_prefix": "python",
-              "coverage_tool": "",
-              "ignore_root_user_error": false
             }
           },
           "python_3_9_aarch64-apple-darwin": {
@@ -9600,10 +9600,10 @@
             "ruleClassName": "multi_toolchain_aliases",
             "attributes": {
               "python_versions": {
+                "3.11": "python_3_11",
                 "3.8": "python_3_8",
                 "3.9": "python_3_9",
                 "3.10": "python_3_10",
-                "3.11": "python_3_11",
                 "3.12": "python_3_12"
               }
             }

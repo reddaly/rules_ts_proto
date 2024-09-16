@@ -8,6 +8,7 @@ load(
     "proto_compile_toolchains",
 )
 load("@aspect_rules_js//js:libs.bzl", "js_library_lib")
+load("@aspect_rules_js//js:providers.bzl", "JsInfo")
 
 #load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@bazel_skylib//lib:paths.bzl", "paths")
@@ -35,8 +36,8 @@ TsProtoInfo = provider(
 GeneratedCodeInfo = provider(
     "Describes the generated TypeScript files that need to be compiled by tsc.",
     fields = {
-        "ts_files": "ProtoInfo for the library.",
-        "js_files": "Label of the ts_proto_library that produced the generated code.",
+        "ts_files": "Generated TypeScript files.",
+        "js_files": "Generated JavaScript files.",
     },
 )
 
@@ -192,7 +193,8 @@ def _ts_proto_library_rule_impl(ctx):
     """
 
     # Could probably also use ctx.attr.js_library[DefaultInfo].files.to_list()
-    js_library_files = ctx.attr.js_library[DefaultInfo].files.to_list()
+    #js_library_files = ctx.attr.js_library[DefaultInfo].files.to_list()
+    js_library_files = ctx.attr.js_library[JsInfo].sources.to_list()
 
     main_library_file = [
         f
@@ -200,11 +202,12 @@ def _ts_proto_library_rule_impl(ctx):
         if f.path.endswith("_pb.mjs") and not (f.path.endswith("grpc_web_pb.mjs"))
     ]
     if len(main_library_file) != 1:
-        fail("expected exactly one file from {} to end in _pb.mjs not not grpc_web_pb.mjs, got {}: {} from {}".format(
+        fail("expected exactly one file from {} to end in _pb.mjs not not grpc_web_pb.mjs, got {}: {} from {}; ctx.attr.js_library[JsInfo] = {}".format(
             ctx.attr.js_library,
             len(main_library_file),
             main_library_file,
             js_library_files,
+            ctx.attr.js_library[JsInfo],
         ))
     main_library_file = main_library_file[0]
 
