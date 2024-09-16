@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"regexp"
@@ -43,7 +43,7 @@ func run(ctx context.Context) error {
 	}
 	// Read CodeGeneratorRequest from stdin per
 	// https://developers.google.com/protocol-buffers/docs/reference/other.
-	reqBytes, err := ioutil.ReadAll(os.Stdin)
+	reqBytes, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		return fmt.Errorf("error reading from stdin: %w", err)
 	}

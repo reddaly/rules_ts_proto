@@ -8882,7 +8882,7 @@
     "@@rules_python~//python/extensions:python.bzl%python": {
       "general": {
         "bzlTransitiveDigest": "uHZmn4VCpelMhuk7Rz8Q5oK94ttURW5KkyvXa6hRTfk=",
-        "usagesDigest": "+l2wgK5BA/hoP0D/28YS9i7O09W9HtZo3B9EHWpd5vo=",
+        "usagesDigest": "l9FoATP1dIQidncrh9B1kvO7H3lqSXOCUHwLSoGHyZk=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {

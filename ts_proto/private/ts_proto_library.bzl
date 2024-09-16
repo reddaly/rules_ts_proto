@@ -3,8 +3,9 @@
 load(
     "@rules_proto_grpc//:defs.bzl",
     "ProtoPluginInfo",
+    "proto_compile",
     "proto_compile_attrs",
-    "proto_compile_impl",
+    "proto_compile_toolchains",
 )
 load("@aspect_rules_js//js:libs.bzl", "js_library_lib")
 
@@ -75,7 +76,12 @@ def _ts_proto_library_protoc_plugin_compile_impl(ctx):
     }
 
     # Execute with extracted attrs
-    usual_providers = proto_compile_impl(ctx, options_override = options)
+    usual_providers = proto_compile(
+        ctx,
+        options = options,
+        extra_protoc_args = [],
+        extra_protoc_files = [],
+    )
 
     # Go through the declared outputs to extract a GeneratedCodeInfo.
     #default_info = [x for x in usual_providers if typeof]
@@ -169,9 +175,8 @@ _ts_proto_library_protoc_plugin_compile = rule(
             doc = "List of protoc plugins to apply",
         ),
     ),
-    toolchains = [
-        str(Label("@rules_proto_grpc//protobuf:toolchain_type")),
-    ],
+    toolchains = proto_compile_toolchains,
+    #[str(Label("@rules_proto_grpc//protobuf:toolchain_type"))],
 )
 
 def _ts_proto_library_rule_impl(ctx):
@@ -195,7 +200,7 @@ def _ts_proto_library_rule_impl(ctx):
         if f.path.endswith("_pb.mjs") and not (f.path.endswith("grpc_web_pb.mjs"))
     ]
     if len(main_library_file) != 1:
-        fail("expected exactly one file from {} to end in _pb.mjs, got {}: {} from {}".format(
+        fail("expected exactly one file from {} to end in _pb.mjs not not grpc_web_pb.mjs, got {}: {} from {}".format(
             ctx.attr.js_library,
             len(main_library_file),
             main_library_file,
@@ -291,8 +296,13 @@ def default_tsconfig():
         },
     }
 
-def ts_proto_library(name, proto, visibility = None, deps = [],
-                     implicit_deps = {}, tsconfig = None):
+def ts_proto_library(
+        name,
+        proto,
+        visibility = None,
+        deps = [],
+        implicit_deps = {},
+        tsconfig = None):
     """A rule for compiling protobufs into a ts_project.
 
     Args:
@@ -343,8 +353,8 @@ def ts_proto_library(name, proto, visibility = None, deps = [],
         "@types/google-protobuf",
     ]
     unsatisfied_npm_packages = [
-        npm_package for
-        npm_package in REQUIRED_NPM_PACKAGE_NAMES
+        npm_package
+        for npm_package in REQUIRED_NPM_PACKAGE_NAMES
         if npm_package not in implicit_deps
     ]
     if len(unsatisfied_npm_packages) > 0:
