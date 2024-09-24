@@ -14,6 +14,7 @@ load("@aspect_rules_js//js:providers.bzl", "JsInfo")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@aspect_bazel_lib//lib:base64.bzl", "base64")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load(":filtered_files.bzl", "filtered_files")
 load(":utils.bzl", "relative_path")
 
@@ -26,7 +27,6 @@ TsProtoInfo = provider(
     fields = {
         "proto_info": "ProtoInfo for the library.",
         "ts_proto_library_label": "Label of the ts_proto_library that produced the generated code.",
-        #"js_info": "JsInfo for the library",
         "primary_js_file": "JavaScript file that should be imported when depending on this library to import messages, enums, etc.",
         "grpc_web_js_file": "JavaScript file that should be imported when depending on this library to import messages, enums, etc.",
         #"ts_proto_info_deps": "depset of TsProtoInfos needed by this library",
@@ -192,37 +192,56 @@ def _ts_proto_library_rule_impl(ctx):
             - DefaultInfo
     """
 
-    # Could probably also use ctx.attr.js_library[DefaultInfo].files.to_list()
-    #js_library_files = ctx.attr.js_library[DefaultInfo].files.to_list()
-    js_library_files = ctx.attr.js_library[JsInfo].sources.to_list()
+    ts_project_transitive_sources = (
+        ctx.attr.ts_project[JsInfo].transitive_sources.to_list()
+    )
+    generated_js_files = (
+        ctx.attr.primary_js_file_js_library[JsInfo].sources.to_list()
+    )
 
     main_library_file = [
         f
-        for f in js_library_files
+        for f in generated_js_files
         if f.path.endswith("_pb.mjs") and not (f.path.endswith("grpc_web_pb.mjs"))
     ]
     if len(main_library_file) != 1:
-        fail("expected exactly one file from {} to end in _pb.mjs not not grpc_web_pb.mjs, got {}: {} from {}; ctx.attr.js_library[JsInfo] = {}".format(
-            ctx.attr.js_library,
+        fail("expected exactly one file from {} to end in _pb.mjs not not grpc_web_pb.mjs, got {}: {} from {}; ctx.attr.ts_project[JsInfo] = {}".format(
+            ctx.attr.ts_project,
             len(main_library_file),
             main_library_file,
-            js_library_files,
-            ctx.attr.js_library[JsInfo],
+            generated_js_files,
+            ctx.attr.ts_project[JsInfo],
         ))
     main_library_file = main_library_file[0]
+    if main_library_file not in ts_project_transitive_sources:
+        fail("primary_js_file {} not found in transitive sources of {}".format(
+            main_library_file,
+            ctx.attr.primary_js_file_js_library,
+        ))
 
+    ts_project_generated_sources = (
+        ctx.attr.ts_project[JsInfo].sources.to_list()
+    )
     grpc_web_library_file = [
         f
-        for f in js_library_files
+        for f in ts_project_generated_sources
         if f.path.endswith("_grpc_web_pb.mjs")
     ]
     if len(grpc_web_library_file) != 1:
-        fail("expected exactly one file from {} to end in _grpc_web_pb.mjs, got {}: {}".format(
-            ctx.attr.js_library,
+        fail(("expected exactly one file from {} to end in _grpc_web_pb.mjs," +
+              "got {} items in {}: all sources = {}").format(
+            ctx.attr.ts_project,
             len(grpc_web_library_file),
             grpc_web_library_file,
+            ts_project_generated_sources,
         ))
+
     grpc_web_library_file = grpc_web_library_file[0]
+    if grpc_web_library_file not in ts_project_transitive_sources:
+        fail("grpc_web_library_file {} not found in transitive sources of {}".format(
+            grpc_web_library_file,
+            ctx.attr.primary_js_file_js_library,
+        ))
 
     proto_info = ctx.attr.proto[ProtoInfo]
     if len(proto_info.direct_sources) != 1:
@@ -235,14 +254,14 @@ def _ts_proto_library_rule_impl(ctx):
 
     return [
         # Provide everything from the js_library of generated files.
-        ctx.attr.js_library[provider]
+        ctx.attr.ts_project[provider]
         for provider in js_library_lib.provides
     ] + [
         # Also provide TsProtoInfo.
         TsProtoInfo(
             proto_info = ctx.attr.proto[ProtoInfo],
             ts_proto_library_label = ctx.label,
-            #js_info = ctx.attr.js_library[JsInfo],
+            #js_info = ctx.attr.ts_project[JsInfo],
             primary_js_file = main_library_file,
             grpc_web_js_file = grpc_web_library_file,
         ),
@@ -257,10 +276,15 @@ _ts_proto_library_rule = rule(
             providers = [ProtoInfo],
             doc = "Label that that provides ProtoInfo such as proto_library from rules_proto.",
         ),
-        "js_library": attr.label(
+        "ts_project": attr.label(
             mandatory = True,
             providers = js_library_lib.provides,
             doc = "Label that provides JsInfo for the generated JavaScript for this rule.",
+        ),
+        "primary_js_file_js_library": attr.label(
+            mandatory = True,
+            providers = [[JsInfo]],
+            doc = "Label for the js_library containing the main proto _pb.mjs file. This label should be a dependency of the ts_project.",
         ),
     },
     toolchains = [],
@@ -335,6 +359,7 @@ def ts_proto_library(
 
     ts_files = name + "_ts_files"
     non_ts_files = name + "_js_files"
+    primary_js_file_js_library = non_ts_files + "_lib"
 
     filtered_files(
         name = ts_files,
@@ -342,11 +367,16 @@ def ts_proto_library(
         filter = "ts",
     )
 
+    # Put the non-TS files into a js_library.
     filtered_files(
         name = non_ts_files,
         srcs = [name + "_compile"],
         filter = "ts",
         invert = True,
+    )
+    js_library(
+        name = primary_js_file_js_library,
+        srcs = [non_ts_files],
     )
 
     implicit_deps_list = []
@@ -366,7 +396,7 @@ def ts_proto_library(
     for dep_package_name in REQUIRED_NPM_PACKAGE_NAMES:
         implicit_deps_list += implicit_deps[dep_package_name]
 
-    deps = [x for x in deps]
+    deps = [x for x in deps] + [primary_js_file_js_library]
     for want_dep in implicit_deps_list:
         if want_dep not in deps:
             deps.append(want_dep)
@@ -376,9 +406,9 @@ def ts_proto_library(
         srcs = [
             ts_files,
         ],
-        assets = [
-            non_ts_files,
-        ],
+        #        assets = [
+        #            non_ts_files,
+        #        ],
         deps = deps,
         tsconfig = tsconfig,
     )
@@ -386,7 +416,8 @@ def ts_proto_library(
     _ts_proto_library_rule(
         name = name,
         proto = proto,
-        js_library = name + "_ts_project",
+        ts_project = name + "_ts_project",
+        primary_js_file_js_library = primary_js_file_js_library,
         visibility = visibility,
     )
 

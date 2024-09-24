@@ -52,8 +52,13 @@ local_path_override(
 )
 
 local_path_override(
+    module_name = "aspect_rules_ts",
+    path = "../../../rules_ts",
+)
+
+local_path_override(
     module_name = "protobuf_javascript_gonzojive",
-    path = "/usr/local/google/home/reddaly/code/protobuf-javascript-bzlmod",
+    path = "../../../protobuf-javascript-bzlmod",
 )
 
 # Needed to resolve https://github.com/bazelbuild/bazel-central-registry/issues/2538.

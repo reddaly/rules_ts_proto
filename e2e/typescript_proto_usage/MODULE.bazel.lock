@@ -753,7 +753,7 @@
     },
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
-        "bzlTransitiveDigest": "ih8NNHbL9x82jWgxv2H9LOcvfWQ4Mi/2ekPCsez/lNc=",
+        "bzlTransitiveDigest": "NcOIU+4m/7RMY4E9fflSEz57I6n++WUzkfedcu222jA=",
         "usagesDigest": "I6za/4zuMBo2QeWIbbBMNJEQLC9o4zdAdtdW1qGN8A8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
