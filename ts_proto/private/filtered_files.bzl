@@ -30,7 +30,7 @@ def _filtered_files_impl(ctx):
         if filter(f)
     ]
 
-    print("_filtered_files_impl passed {} of {}".format(passed_files, all_files))
+    #print("_filtered_files_impl passed {} of {}".format(passed_files, all_files))
 
     return [
         DefaultInfo(

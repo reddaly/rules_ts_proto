@@ -143,7 +143,15 @@ ts_proto_library(
     proto = "@com_google_api//google/api:client_proto",
     deps = [
         ":descriptor_ts_proto",
+        ":duration_ts_proto",
+        ":launch_stage_ts_proto",
     ],
+)
+
+ts_proto_library(
+    name = "launch_stage_ts_proto",
+    implicit_deps = IMPLICIT_DEPS,
+    proto = "@com_google_api//google/api:launch_stage_proto",
 )
 
 ts_proto_library(
